@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yao.dao.EmailDao">
+    <resultMap id="email" type="EmailWithBlobs">
+        <id column="id" property="id" javaType="java.lang.Integer"/>
+        <result column="title" property="title" javaType="java.lang.String"/>
+        <result column="from" property="from" javaType="java.lang.String"/>
+        <result column="content" property="content" javaType="java.lang.String"/>
+        <result column="send_time" property="sendTime" javaType="java.util.Date"/>
+
+        <association property="attachments" column="id"
+                     select="com.yao.dao.AttachmentDao.selectByEmailId"/>
+    </resultMap>
+    <insert id="insert" parameterType="EmailWithBlobs"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into email(
+            title, `from`, content, send_time
+        )values(
+            #{title}, #{from}, #{content}, #{sendTime}
+        )
+    </insert>
+    <select id="selectByKey" parameterType="com.yao.dto.QueryDto"
+            resultMap="email">
+        select * from email
+        <where>
+            <if test="key != null">
+                and title like '%${key}%'
+            </if>
+            <if test="isContent eq 1 and key != null">
+                or content like '%${key}%'
+            </if>
+        </where>
+    </select>
+    <select id="selectById" parameterType="Integer" resultMap="email">
+        select * from email where id = #{id}
+    </select>
+</mapper>

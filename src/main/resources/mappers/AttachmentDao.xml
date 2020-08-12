@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.4//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yao.dao.AttachmentDao">
+    <resultMap id="attachment" type="Attachment">
+        <id column="id" property="id" javaType="Integer"/>
+        <result column="filename" property="fileName" javaType="String"/>
+        <result column="email_id" property="emailId" javaType="Integer"/>
+    </resultMap>
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into attachment(filename, email_id) values
+        <foreach collection="attachments" index="index" separator=","
+                 item="attachment">
+            (
+                #{attachment.fileName},
+                #{attachment.emailId}
+            )
+        </foreach>
+    </insert>
+    <select id="selectByEmailId" parameterType="Integer"
+            resultMap="attachment">
+        select * from attachment where email_id = #{emailId}
+    </select>
+    <select id="selectAll" resultMap="attachment">
+        select * from attachment
+    </select>
+</mapper>
